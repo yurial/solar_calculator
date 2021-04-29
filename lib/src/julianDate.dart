@@ -1,27 +1,32 @@
 import 'timespan.dart';
 import 'privateExtensions.dart';
-import 'publicExtensions.dart';
 
+/// Represents a Julian date.
+///
+/// The Julian date (JD) of any instant is the Julian day number plus the fraction of a day since the preceding noon in
+/// Universal Time. Julian dates are expressed as a Julian day number with a decimal fraction added.
+///
+/// The Julian day number (JDN) is the number assigned to a whole solar day in the Julian day count starting from
+/// 1 Jan -4712 at noon Universal time (January 1, 4713 BC at noon Universal Time).
 class JulianDate {
-  /// The Julian date (JD) of any instant is the Julian day number plus the fraction of a day since the preceding noon in
-  /// Universal Time. Julian dates are expressed as a Julian day number with a decimal fraction added.
-  ///
-  /// The Julian day number (JDN) is the number assigned to a whole solar day in the Julian day count starting from
-  /// 1 Jan -4712 at noon Universal time (January 1, 4713 BC at noon Universal Time).
+  late final DateTime gregorianDateTime;
+
+  /// The Julian date.
   late final double julianDate;
 
-  /// Gets the number of Julian centuries since the J2000.0 epoch.
+  /// The number of Julian centuries since the J2000.0 epoch.
   ///
-  /// Technically, it corresponds to the number of Julian centuries of 36525 ephemeris days from the epoch J2000.0.
+  /// Since a Julian year counts exactly 365.25 Julian days, a Julian century counts 36,525.0 Julian days.
   ///
   /// The J2000.0 epoch is precisely Julian date 2451545.0 TT (Terrestrial Time), or January 1, 2000, noon TT.
   /// This is equivalent to January 1, 2000, 11:59:27.816 TAI or January 1, 2000, 11:58:55.816 UTC.
   double get julianCenturies => (julianDate - 2451545.0) / 36525.0;
 
-  JulianDate(this.julianDate);
+  // JulianDate(this.julianDate);
 
-  JulianDate.fromDateTime(DateTime dateTime) {
-    var utcDate = dateTime.toUtc();
+  /// Create the corresponding [JulianDate] of the given [gregorianDateTime].
+  JulianDate.fromDateTime(this.gregorianDateTime) {
+    var utcDate = gregorianDateTime.toUtc();
 
     var year = utcDate.year;
     var month = utcDate.month;
@@ -53,6 +58,7 @@ class JulianDate {
     //-(this.timeZoneOffset.inHours / 24);
   }
 
+  /// Convert this [JulianDate] to a [DateTime].
   DateTime toDateTime() {
     var a;
     var z = (julianDate + 0.5).floor();
@@ -80,7 +86,11 @@ class JulianDate {
     return DateTime.utc(year, month, day.truncate()).add(durationToAdd);
   }
 
-  JulianDate operator +(Duration duration) => JulianDate(julianDate + duration.totalDays);
+  // JulianDate operator +(Duration duration) => JulianDate(julianDate + duration.totalDays);
 
-  JulianDate operator -(Duration duration) => JulianDate(julianDate - duration.totalDays);
+  // JulianDate operator -(Duration duration) => JulianDate(julianDate - duration.totalDays);
+
+  JulianDate operator +(Duration duration) => JulianDate.fromDateTime(gregorianDateTime.add(duration));
+
+  JulianDate operator -(Duration duration) => JulianDate.fromDateTime(gregorianDateTime.subtract(duration));
 }

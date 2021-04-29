@@ -10,21 +10,13 @@ import '../angles/hourAngle.dart';
 ///
 /// https://en.wikipedia.org/wiki/Equatorial_coordinate_system
 class EquatorialCoordinate {
-  /// Right ascension in degrees.
+  /// Right ascension expressed in time.
   ///
   /// The right ascension measures the angular distance of an object eastward along the celestial equator from the vernal equinox
   /// (the Sun at the March equinox) to the hour circle passing through the object.
   ///
   /// Note: the hour circle, is the great circle through the object and the two celestial poles.
-  final double rightAscension;
-
-  /// Gets the right ascension as hour angle.
-  ///
-  /// The right ascension measures the angular distance of an object eastward along the celestial equator from the vernal equinox
-  /// (the Sun at the March equinox) to the hour circle passing through the object.
-  ///
-  /// Note: the hour circle, is the great circle through the object and the two celestial poles.
-  HourAngle get rightAscensionHourAngle => HourAngle.fromDegrees(rightAscension);
+  final HourAngle rightAscension;
 
   /// Declination angle in degrees.
   ///

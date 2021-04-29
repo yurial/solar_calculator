@@ -1,25 +1,29 @@
-import 'angle.dart';
 import '../privateExtensions.dart';
 
+/// Represents an angular measurement expressed in time.
 class HourAngle {
   late final int hours;
   late final int minutes;
   late final double seconds;
 
-  HourAngle({this.hours = 0, this.minutes = 0, this.seconds = 0});
+  /// The corresponding angle decimal value in degrees.
+  double get decimalDegrees => (hours + (minutes / Duration.minutesPerHour) + (seconds / Duration.secondsPerHour)) * 15;
 
-  HourAngle.fromAngle(Angle angle) {
-    _initializeFromDegrees(angle.degrees);
-  }
+  // HourAngle({this.hours = 0, this.minutes = 0, this.seconds = 0});
 
+  /// Creates an [HourAngle] from its decimal value in [degrees].
   HourAngle.fromDegrees(double degrees) {
     _initializeFromDegrees(degrees);
   }
 
+  /// Creates an [HourAngle] from its decimal value in [radians].
   HourAngle.fromRadians(double radians) {
     _initializeFromDegrees(radians.toDegrees());
   }
 
+  /// A string representation of this [HourAngle].
+  ///
+  /// In this representation, the number of seconds is represented with two decimal digits.
   @override
   String toString() => '${hours}h ${minutes}m ${seconds.toStringAsFixed(2)}s';
 
