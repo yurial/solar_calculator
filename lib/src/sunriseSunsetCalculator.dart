@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'calculatorCore.dart';
-import '../timespan.dart';
-import '../julianDate.dart';
-import '../privateExtensions.dart';
-import '../publicExtensions.dart';
+import 'package:solar_calculator/src/celestialObjects/sun.dart';
+
+import 'timespan.dart';
+import 'julianDate.dart';
+import 'extensions.dart';
 
 class SunriseSunsetCalculator {
   /// Zenith distance of the Sun used as a reference.
@@ -23,20 +23,20 @@ class SunriseSunsetCalculator {
   SunriseSunsetCalculator(this.date, this.latitude, this.longitude, {this.sunZenithDistance = 90.833});
 
   double _getSunriseMinutes(JulianDate julianDate) {
-    var core = CalculatorCore(julianDate);
+    var sun = Sun(julianDate);
 
-    var equationOfTime = core.equationOfTime;
-    var sunDeclination = core.sunEquatorialPosition.declination;
+    var equationOfTime = sun.equationOfTime;
+    var sunDeclination = sun.equatorialPosition.declination;
     var hourAngle = _getSolarHourAngleForSunriseSunset(sunDeclination);
 
     return 720 - 4 * (longitude + hourAngle) - equationOfTime;
   }
 
   double _getSunsetMinutes(JulianDate julianDate) {
-    var core = CalculatorCore(julianDate);
+    var sun = Sun(julianDate);
 
-    var equationOfTime = core.equationOfTime;
-    var sunDeclination = core.sunEquatorialPosition.declination;
+    var equationOfTime = sun.equationOfTime;
+    var sunDeclination = sun.equatorialPosition.declination;
     var hourAngle = _getSolarHourAngleForSunriseSunset(sunDeclination);
 
     return 720 - 4 * (longitude - hourAngle) - equationOfTime;
@@ -158,7 +158,8 @@ class SunriseSunsetCalculator {
     // 	julianday -= incr
     // }
 
-    return julianDate.toDateTime().midnightUtc.add(Timespan.fromMinutes(time));
+    return julianDate.gregorianDateTime.midnightUtc.add(Timespan.fromMinutes(time));
+    // return julianDate.toDateTime().midnightUtc.add(Timespan.fromMinutes(time));
   }
 
   DateTime _getNextEvent(double Function(JulianDate julianDate) getEvent) {
@@ -177,7 +178,8 @@ class SunriseSunsetCalculator {
     // 	julianday -= incr
     // }
 
-    return julianDate.toDateTime().midnightUtc.add(Timespan.fromMinutes(time));
+    return julianDate.gregorianDateTime.midnightUtc.add(Timespan.fromMinutes(time));
+    // return julianDate.toDateTime().midnightUtc.add(Timespan.fromMinutes(time));
   }
 
   /// Gets the solar hour angle in degrees for sunset and sunrise calculation, corrected for atmospheric refraction,

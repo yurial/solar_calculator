@@ -1,13 +1,11 @@
-import 'dart:math';
+import 'package:solar_calculator/src/celestialObjects/sun.dart';
 
 import 'timespan.dart';
-import 'calculatorCores/calculatorCore.dart';
 import 'coordinateSystems/equatorialCoordinate.dart';
 import 'coordinateSystems/horizontalCoordinate.dart';
 import 'julianDate.dart';
-import 'privateExtensions.dart';
-import 'publicExtensions.dart';
-import 'calculatorCores/sunriseSunsetCalculator.dart';
+import 'extensions.dart';
+import 'sunriseSunsetCalculator.dart';
 import 'twilight.dart';
 
 /// Calculates the apparent position of the sun, sunrise, sunset, noon and the different twilights times for a given moment
@@ -23,29 +21,27 @@ class SolarCalculator {
 
   final double longitude;
 
-  SolarCalculator(this.date, this.latitude, this.longitude);
+  const SolarCalculator(this.date, this.latitude, this.longitude);
 
   /// Gets if it is darkness hours based on the end of the nautical twilight.
-  bool getIfHoursOfDarkness() {
-    var sunHorizontalPosition = getSunHorizontalPosition();
-
-    var solarZenith = 90 - sunHorizontalPosition.elevation;
+  bool isHoursOfDarkness() {
+    var solarZenith = 90 - sunHorizontalPosition().elevation;
     return (solarZenith > 102.0);
   }
 
   /// Get the noon time in UTC.
-  DateTime getNoon() {
+  DateTime noonTime() {
     var julianDate = JulianDate.fromDateTime(date.midnightUtc);
 
     var tNoon = (julianDate - Timespan.fromDays(longitude / 360));
 
-    var core = CalculatorCore(tNoon);
-    var solNoonOffset = 720 - (longitude * 4) - core.equationOfTime; // in minutes
+    var sun = Sun(tNoon);
+    var solNoonOffset = 720 - (longitude * 4) - sun.equationOfTime; // in minutes
 
     var newT = (julianDate + Timespan.fromMinutes(solNoonOffset));
-    var core2 = CalculatorCore(newT);
+    var newSun = Sun(newT);
 
-    var solNoonUtc = 720 - (longitude * 4) - core2.equationOfTime; // + (timezone * 60); // in minutes
+    var solNoonUtc = 720 - (longitude * 4) - newSun.equationOfTime; // + (timezone * 60); // in minutes
     // var solNoonLocal = solNoonUtc + date.timeZoneOffset.inMinutes;
 
     return date.midnightUtc.add(Timespan.fromMinutes(solNoonUtc));
@@ -60,17 +56,17 @@ class SolarCalculator {
   }
 
   /// Get the sunrise time in UTC.
-  DateTime getSunrise() => SunriseSunsetCalculator(date, latitude, longitude).getSunrise();
+  DateTime sunriseTime() => SunriseSunsetCalculator(date, latitude, longitude).getSunrise();
 
   /// Get the sunset time in UTC.
-  DateTime getSunset() => SunriseSunsetCalculator(date, latitude, longitude).getSunset();
+  DateTime sunseTime() => SunriseSunsetCalculator(date, latitude, longitude).getSunset();
 
   /// Gets the morning astronomical twilight in UTC.
   ///
   /// The astronomical twilight is when the centre of the Sun is between 12° and 18° below the sensible horizon. Astronomical twilight is
   /// often considered to be "complete darkness".
   /// Sixth magnitude stars are no longer visible to the naked eye under good conditions.
-  Twilight getMorningAstronomicalTwilight() {
+  Twilight morningAstronomicalTwilight() {
     var begining = SunriseSunsetCalculator(date, latitude, longitude, sunZenithDistance: 108.0).getSunrise();
     var ending = SunriseSunsetCalculator(date, latitude, longitude, sunZenithDistance: 102.0).getSunrise();
     return Twilight(begining, ending);
@@ -80,7 +76,7 @@ class SolarCalculator {
   ///
   /// The nautical twilight is when the centre of the Sun is between 6° and 12° below the sensible horizon.
   /// It may now be possible to discern the sea horizon and it is no longer dark for normal practical purposes.
-  Twilight getMorningNauticalTwilight() {
+  Twilight morningNauticalTwilight() {
     var begining = SunriseSunsetCalculator(date, latitude, longitude, sunZenithDistance: 102.0).getSunrise();
     var ending = SunriseSunsetCalculator(date, latitude, longitude, sunZenithDistance: 96.0).getSunrise();
     return Twilight(begining, ending);
@@ -91,7 +87,7 @@ class SolarCalculator {
   /// The civil twillight is when the centre of the Sun is between 0° 50' and 6° below the sensible horizon.
   /// Illumination is such that it is possible to carry out day time tasks without additional artificial lighting.
   /// Large terrestrial objects can be now distinguished. The sea horizon is clearly defined and the brightest stars and planets are still visible.
-  Twilight getMorningCivilTwilight() {
+  Twilight morningCivilTwilight() {
     var begining = SunriseSunsetCalculator(date, latitude, longitude, sunZenithDistance: 96.0).getSunrise();
     var ending = SunriseSunsetCalculator(date, latitude, longitude).getSunrise();
     return Twilight(begining, ending);
@@ -102,7 +98,7 @@ class SolarCalculator {
   /// The astronomical twilight is when the centre of the Sun is between 12° and 18° below the sensible horizon. Astronomical twilight is
   /// often considered to be "complete darkness".
   /// Sixth magnitude stars are now visible to the naked eye under good conditions.
-  Twilight getEveningAstronomicalTwilight() {
+  Twilight eveningAstronomicalTwilight() {
     var begining = SunriseSunsetCalculator(date, latitude, longitude, sunZenithDistance: 102.0).getSunset();
     var ending = SunriseSunsetCalculator(date, latitude, longitude, sunZenithDistance: 108.0).getSunset();
     return Twilight(begining, ending);
@@ -112,7 +108,7 @@ class SolarCalculator {
   ///
   /// The nautical twilight is when the centre of the Sun is between 6° and 12° below the sensible horizon.
   /// The sea horizon is no longer visible and it can be considered to be dark for normal practical purposes.
-  Twilight getEveningNauticalTwilight() {
+  Twilight eveningNauticalTwilight() {
     var begining = SunriseSunsetCalculator(date, latitude, longitude, sunZenithDistance: 96.0).getSunset();
     var ending = SunriseSunsetCalculator(date, latitude, longitude, sunZenithDistance: 102.0).getSunset();
     return Twilight(begining, ending);
@@ -123,7 +119,7 @@ class SolarCalculator {
   /// The civil twillight is when the centre of the Sun is between 0° 50' and 6° below the sensible horizon.
   /// Large terrestrial objects can be seen but no detail can be distinguished. The sea horizon is clearly defined and
   /// the brightest stars and planets are visible.
-  Twilight getEveningCivilTwilight() {
+  Twilight eveningCivilTwilight() {
     var begining = SunriseSunsetCalculator(date, latitude, longitude).getSunset();
     var ending = SunriseSunsetCalculator(date, latitude, longitude, sunZenithDistance: 96.0).getSunset();
     return Twilight(begining, ending);
@@ -135,9 +131,8 @@ class SolarCalculator {
   /// to +23.44° at the summer solstice.
   /// The variation in solar declination is the astronomical description of the sun going south (in the northern hemisphere)
   /// for the winter.
-  EquatorialCoordinate getSunEquatorialPosition() => CalculatorCore(date.julianDate).sunEquatorialPosition;
+  EquatorialCoordinate sunEquatorialPosition() => Sun(date.julianDate).equatorialPosition;
 
   /// Gets the apparent position of the Sun in the Horizontal Coordinate System.
-  HorizontalCoordinate getSunHorizontalPosition() =>
-      CalculatorCore(date.julianDate).getSunHorizontalPosition(latitude, longitude);
+  HorizontalCoordinate sunHorizontalPosition() => Sun(date.julianDate).sunHorizontalPosition(latitude, longitude);
 }

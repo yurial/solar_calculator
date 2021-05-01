@@ -1,4 +1,4 @@
-import '../privateExtensions.dart';
+import '../extensions.dart';
 
 /// Represents an angular measurement.
 ///
@@ -14,8 +14,18 @@ class Angle {
   late final double radians;
 
   /// Creates an [Angle] from its sexagesimal form ([degrees], [minutes], [seconds]).
+  ///
+  /// In case of a negative angle, only the [degrees] value should be negative. If the [minutes] and/or [seconds] are negative,
+  /// these will be converted into positive values to avoid confusion.
+  ///
+  /// So, an angle of ```-12° 32' 44"``` should be entered as:
+  /// ```dart
+  /// Angle(degrees: -12, minutes: 32, seconds: 44);
+  /// ```
   Angle({double degrees = 0, double minutes = 0, double seconds = 0}) {
-    this.degrees = degrees + (minutes / 60) + (seconds / 3600);
+    var sign = (degrees.isNegative ? -1 : 1);
+
+    this.degrees = (degrees + (minutes / 60) + (seconds / 3600)) * sign;
     radians = this.degrees.toRadians();
   }
 
