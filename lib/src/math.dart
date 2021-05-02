@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 /// Evaluates a polynomal with [coefficients] and one variable [x].
 ///
 /// Example: ```y = 52.45 + (12.34 * x) + (98.98 * x^2) - (34.78 * x^3)``` for ```x = 20```:

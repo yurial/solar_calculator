@@ -1,4 +1,4 @@
-/// Calculates the apparent position of the sun, sunrise, sunset, noon and the different twilights times for a given moment
+/// Calculates the apparent position of the Sun, sunrise, sunset, noon and the different twilights times for a given moment
 /// in time and position on Earth.
 library solar_calculator;
 

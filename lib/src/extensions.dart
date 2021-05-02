@@ -12,10 +12,10 @@ extension DoubleExtensions on double {
     return value;
   }
 
-  /// Converts this [Double] degrees to radians.
+  /// Converts this [double] degrees to radians.
   double toRadians() => this * (pi / 180);
 
-  /// Converts this [Double] radians to degrees.
+  /// Converts this [double] radians to degrees.
   double toDegrees() => this * (180 / pi);
 }
 

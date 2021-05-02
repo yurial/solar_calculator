@@ -39,57 +39,58 @@ void main() {
 
   var calc = SolarCalculator(date, latitude, longitude);
 
-  var sunEquatorialPosition = calc.getSunEquatorialPosition();
+  var sunEquatorialPosition = calc.calculateSunEquatorialPosition();
   print('Sun Equatorial position:');
-  print('    Right ascension: ${sunEquatorialPosition.rightAscension} = ${sunEquatorialPosition.rightAscension.decimalDegrees}');
+  print(
+      '    Right ascension: ${sunEquatorialPosition.rightAscension} = ${sunEquatorialPosition.rightAscension.decimalDegrees}');
   print('    Declination: ${sunEquatorialPosition.declination}');
 
-  var sunHorizontalPosition = calc.getSunHorizontalPosition();
+  var sunHorizontalPosition = calc.calculateSunHorizontalPosition();
   print('Sun Horizontal position:');
   print('    Azimuth: ${sunHorizontalPosition.azimuth}');
   print('    Elevation: ${sunHorizontalPosition.elevation}');
 
-  var morningAstronomicalTwilight = calc.getMorningAstronomicalTwilight();
+  var morningAstronomicalTwilight = calc.calculateMorningAstronomicalTwilight();
   print('Morning astronomical twilight:');
   print('    Begining: ${morningAstronomicalTwilight.begining}');
   print('    Ending: ${morningAstronomicalTwilight.ending}');
   print('    Duration: ${morningAstronomicalTwilight.duration}');
 
-  var morningNauticalTwilight = calc.getMorningNauticalTwilight();
+  var morningNauticalTwilight = calc.calculateMorningNauticalTwilight();
   print('Morning nautical twilight:');
   print('    Begining: ${morningNauticalTwilight.begining}');
   print('    Ending: ${morningNauticalTwilight.ending}');
   print('    Duration: ${morningNauticalTwilight.duration}');
 
-  var morningCivilTwilight = calc.getMorningCivilTwilight();
+  var morningCivilTwilight = calc.calculateMorningCivilTwilight();
   print('Morning civil twilight:');
   print('    Begining: ${morningCivilTwilight.begining}');
   print('    Ending: ${morningCivilTwilight.ending}');
   print('    Duration: ${morningCivilTwilight.duration}');
 
-  print('Sunrise: ${calc.getSunrise()}');
-  print('Noon: ${calc.getNoon()}');
-  print('Sunset: ${calc.getSunset()}');
+  print('Sunrise: ${calc.calculateSunriseTime()}');
+  print('Noon: ${calc.calculateSunTransitTime()}');
+  print('Sunset: ${calc.calculateSunseTime()}');
 
-  var eveningCivilTwilight = calc.getEveningCivilTwilight();
+  var eveningCivilTwilight = calc.calculateEveningCivilTwilight();
   print('Evening civil twilight:');
   print('    Begining: ${eveningCivilTwilight.begining}');
   print('    Ending: ${eveningCivilTwilight.ending}');
   print('    Duration: ${eveningCivilTwilight.duration}');
 
-  var eveningNauticalTwilight = calc.getEveningNauticalTwilight();
+  var eveningNauticalTwilight = calc.calculateEveningNauticalTwilight();
   print('Evening nautical twilight:');
   print('    Begining: ${eveningNauticalTwilight.begining}');
   print('    Ending: ${eveningNauticalTwilight.ending}');
   print('    Duration: ${eveningNauticalTwilight.duration}');
 
-  var eveningAstronomicalTwilight = calc.getEveningAstronomicalTwilight();
+  var eveningAstronomicalTwilight = calc.calculateEveningAstronomicalTwilight();
   print('Evening astronomical twilight:');
   print('    Begining: ${eveningAstronomicalTwilight.begining}');
   print('    Ending: ${eveningAstronomicalTwilight.ending}');
   print('    Duration: ${eveningAstronomicalTwilight.duration}');
 
-  if (calc.getIfHoursOfDarkness()) print('===> IS DARK <===');
+  if (calc.isHoursOfDarkness) print('===> IS DARK <===');
 }
 ```
 

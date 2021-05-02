@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:solar_calculator/solar_calculator.dart';
-import 'package:solar_calculator/src/celestialObjects/earth.dart';
+import 'package:solar_calculator/src/celestialBodies/earth.dart';
 import 'package:solar_calculator/src/coordinateSystems/horizontalCoordinate.dart';
 import 'package:solar_calculator/src/julianDate.dart';
 import 'package:solar_calculator/src/math.dart';
@@ -23,7 +23,6 @@ class Sun {
   double? _apparentLongitude;
   double? _equationOfTime;
 
-  HorizontalCoordinate? _horizontalPosition;
   EquatorialCoordinate? _equatorialPosition;
 
   factory Sun(JulianDate julianDate) => _cache.putIfAbsent(julianDate.julianDay, () => Sun._internal(julianDate));
@@ -162,7 +161,7 @@ class Sun {
   double get apparentLongitude => _apparentLongitude ??=
       trueLongitude - 0.00569 - (0.00478 * sin(Earth(julianDate).nutationAndAberrationCorrection.toRadians()));
 
-  /// Apparent position of the Sun in the Equatorial Coordinate System.
+  /// The Apparent position of the Sun in the Equatorial Coordinate System.
   ///
   /// Its declination angle varies from -23.44° at the (northern hemisphere) winter solstice, through 0° at the vernal equinox,
   /// to +23.44° at the summer solstice.
@@ -186,72 +185,68 @@ class Sun {
   }
 
   /// Gets the apparent position of the Sun in the Horizontal Coordinate System.
-  HorizontalCoordinate sunHorizontalPosition(double latitude, double longitude) {
-    if (_horizontalPosition == null) {
-      var timeOffset = equationOfTime + (4.0 * longitude); // - 60.0 * zone
-      // var earthRadVec = calcSunRadVector(T)
-      var utcTime = julianDate.gregorianDateTime.toUtc();
-      var time = Duration(
-          hours: utcTime.hour,
-          minutes: utcTime.minute,
-          seconds: utcTime.second,
-          milliseconds: utcTime.millisecond,
-          microseconds: utcTime.microsecond);
+  HorizontalCoordinate horizontalPosition(double latitude, double longitude) {
+    var timeOffset = equationOfTime + (4.0 * longitude); // - 60.0 * zone
+    // var earthRadVec = calcSunRadVector(T)
+    var utcTime = julianDate.gregorianDateTime.toUtc();
+    var time = Duration(
+        hours: utcTime.hour,
+        minutes: utcTime.minute,
+        seconds: utcTime.second,
+        milliseconds: utcTime.millisecond,
+        microseconds: utcTime.microsecond);
 
-      var trueSolarTime = time.totalMinutes + timeOffset;
+    var trueSolarTime = time.totalMinutes + timeOffset;
 
-      while (trueSolarTime > Duration.minutesPerDay) {
-        trueSolarTime -= Duration.minutesPerDay;
-      }
-
-      var hourAngle = (trueSolarTime / 4.0) - 180.0; // Solar hour angle in degrees
-      if (hourAngle < -180) hourAngle += 360.0;
-
-      var latitudeRadians = latitude.toRadians();
-      var sunDeclinationRadians = equatorialPosition.declination.toRadians();
-      var hourAngleRadians = hourAngle.toRadians();
-
-      // Calculate the cosinus of the solar zenith angle.
-      var csz = (sin(latitudeRadians) * sin(sunDeclinationRadians)) +
-          (cos(latitudeRadians) * cos(sunDeclinationRadians) * cos(hourAngleRadians));
-
-      if (csz > 1.0) {
-        csz = 1.0;
-      } else if (csz < -1.0) csz = -1.0;
-
-      var zenithRadians = acos(csz);
-      var zenith = zenithRadians.toDegrees();
-      var azimuthDenominator = cos(latitudeRadians) * sin(zenithRadians);
-
-      double azimuth;
-
-      if (azimuthDenominator.abs() > 0.001) {
-        var azimuthRadians =
-            ((sin(latitudeRadians) * cos(zenithRadians)) - sin(sunDeclinationRadians)) / azimuthDenominator;
-
-        if (azimuthRadians.abs() > 1.0) azimuthRadians = (azimuthRadians < 0) ? -1.0 : 1.0;
-
-        azimuth = 180.0 - acos(azimuthRadians).toDegrees();
-
-        if (hourAngle > 0.0) azimuth = -azimuth;
-      } else {
-        azimuth = (latitude > 0.0) ? 180.0 : 0.0;
-      }
-
-      if (azimuth < 0.0) azimuth += 360.0;
-
-      var exoatmElevation = 90.0 - zenith;
-
-      // Atmospheric Refraction correction
-      var refractionCorrection = _calculateAtmosphericRefractionCorrection(exoatmElevation);
-
-      var correctedSolarZenith = zenith - refractionCorrection;
-      var elevation = 90.0 - correctedSolarZenith;
-
-      _horizontalPosition = HorizontalCoordinate(azimuth, elevation);
+    while (trueSolarTime > Duration.minutesPerDay) {
+      trueSolarTime -= Duration.minutesPerDay;
     }
 
-    return _horizontalPosition!;
+    var hourAngle = (trueSolarTime / 4.0) - 180.0; // Solar hour angle in degrees
+    if (hourAngle < -180) hourAngle += 360.0;
+
+    var latitudeRadians = latitude.toRadians();
+    var sunDeclinationRadians = equatorialPosition.declination.toRadians();
+    var hourAngleRadians = hourAngle.toRadians();
+
+    // Calculate the cosinus of the solar zenith angle.
+    var csz = (sin(latitudeRadians) * sin(sunDeclinationRadians)) +
+        (cos(latitudeRadians) * cos(sunDeclinationRadians) * cos(hourAngleRadians));
+
+    if (csz > 1.0) {
+      csz = 1.0;
+    } else if (csz < -1.0) csz = -1.0;
+
+    var zenithRadians = acos(csz);
+    var zenith = zenithRadians.toDegrees();
+    var azimuthDenominator = cos(latitudeRadians) * sin(zenithRadians);
+
+    double azimuth;
+
+    if (azimuthDenominator.abs() > 0.001) {
+      var azimuthRadians =
+          ((sin(latitudeRadians) * cos(zenithRadians)) - sin(sunDeclinationRadians)) / azimuthDenominator;
+
+      if (azimuthRadians.abs() > 1.0) azimuthRadians = (azimuthRadians < 0) ? -1.0 : 1.0;
+
+      azimuth = 180.0 - acos(azimuthRadians).toDegrees();
+
+      if (hourAngle > 0.0) azimuth = -azimuth;
+    } else {
+      azimuth = (latitude > 0.0) ? 180.0 : 0.0;
+    }
+
+    if (azimuth < 0.0) azimuth += 360.0;
+
+    var exoatmElevation = 90.0 - zenith;
+
+    // Atmospheric Refraction correction
+    var refractionCorrection = _calculateAtmosphericRefractionCorrection(exoatmElevation);
+
+    var correctedSolarZenith = zenith - refractionCorrection;
+    var elevation = 90.0 - correctedSolarZenith;
+
+    return HorizontalCoordinate(azimuth, elevation);
   }
 
   /// Calculates the approximate Atmospheric Refraction Correction in degrees for the given [elevation].
