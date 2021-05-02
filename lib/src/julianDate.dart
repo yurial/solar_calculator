@@ -68,7 +68,7 @@ class JulianDate {
   DateTime toDateTime() {
     var a;
 
-    final modfJulianDay = modf(julianCenturies + 0.5);
+    final modfJulianDay = modf(julianDay + 0.5);
     // var z = (julianDay + 0.5).floor(); // Integer part
     // var f = (julianDay + 0.5) - z; // Fractional part
     if (modfJulianDay.integerPart < 2299161) {

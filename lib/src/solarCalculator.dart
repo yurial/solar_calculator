@@ -21,7 +21,12 @@ class SolarCalculator {
 
   final double longitude;
 
-  SolarCalculator(this.date, this.latitude, this.longitude);
+  SolarCalculator(this.date, double latitude, this.longitude)
+      : latitude = (latitude >= 90)
+            ? 89.9
+            : (latitude <= -90)
+                ? -89.9
+                : latitude;
 
   /// Gets if it is darkness hours based on the end of the nautical twilight.
   bool get isHoursOfDarkness {
