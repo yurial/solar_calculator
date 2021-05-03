@@ -1,4 +1,4 @@
-A Dart library that calculates the position of the Sun, the sunrise, sunset, solar noon times, and the different twilights periods, for any given moment in time and position on Earth.
+A Dart library that calculates the position of the Sun, the sunrise, sunset, solar noon times, and the different twilight periods, for any given moment in time and position on Earth.
 
 The calculations are based on equations from Astronomical Algorithms, by Jean Meeus. The sunrise and sunset results are theoretically accurate to within a minute for locations between +/- 72° of latitude, and within 10 minutes outside of those latitudes. However, due to variations in atmospheric composition, temperature, pressure and conditions, the calculated values may differ from the observed values.
 
