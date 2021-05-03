@@ -6,7 +6,7 @@ extension DoubleExtensions on double {
   /// Corrects for very large angles.
   ///
   /// Because astronomical calculations generate very large angles it is necessary to reduce such angles to be between 0 and 360 degrees.
-  double get correctedDegrees {
+  double correctDegreesForLargeAngles() {
     var value = this % 360;
     if (value < 0) value += 360;
     return value;

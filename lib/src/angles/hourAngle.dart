@@ -10,8 +10,6 @@ class HourAngle {
   double get decimalDegrees =>
       (arcHours + (arcMinutes / Duration.minutesPerHour) + (arcSeconds / Duration.secondsPerHour)) * 15;
 
-  // HourAngle({this.hours = 0, this.minutes = 0, this.seconds = 0});
-
   /// Creates an [HourAngle] from its decimal value in [degrees].
   HourAngle.fromDegrees(double degrees) {
     _initializeFromDegrees(degrees);
@@ -29,7 +27,6 @@ class HourAngle {
   String toString() => '${arcHours}h ${arcMinutes}m ${arcSeconds.toStringAsFixed(2)}s';
 
   void _initializeFromDegrees(double degrees) {
-    // TODO Check if hour angle can be negative
     var d = (degrees < 0) ? degrees + 360 : degrees;
     d = (d / 15);
 

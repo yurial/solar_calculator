@@ -1,6 +1,6 @@
-A library that calculates the position of the Sun, the solar noon time, and the sunrise, sunset, and twilight times, for any given moment in time and position on Earth.
+A Dart library that calculates the position of the Sun, the sunrise, sunset, solar noon times, and the different twilights periods, for any given moment in time and position on Earth.
 
-The calculations are based on equations from Astronomical Algorithms, by Jean Meeus. The sunrise and sunset results are theoretically accurate to within a minute for locations between +/- 72° of latitude, and within 10 minutes outside of those latitudes. However, due to variations in atmospheric composition, temperature, pressure and conditions, observed values may vary from calculations.
+The calculations are based on equations from Astronomical Algorithms, by Jean Meeus. The sunrise and sunset results are theoretically accurate to within a minute for locations between +/- 72° of latitude, and within 10 minutes outside of those latitudes. However, due to variations in atmospheric composition, temperature, pressure and conditions, the calculated values may differ from the observed values.
 
 ## Features
 
@@ -22,7 +22,7 @@ For sunrise, sunset and twilights calculations, 0.833° of atmospheric refractio
 
 The effects of the atmosphere vary with atmospheric pressure, humidity and other variables. Therefore the Sun position calculated is approximate. Related to these effects, the further away you are from the equator, errors in sunrise, sunset and twilight times can be expected to increase because the sun rises and sets at a very shallow angle; in this condition, small variations in the atmosphere can have a larger effect.
 
-The approximations used in this calculator are very good for years between 1800 and 2100. Results should still be sufficiently accurate for the range from -1000 to 3000. Outside of this range, results may be given, but the potential for error is higher.
+The approximations used in this calculator are very good for years between 1800 and 2100. Results should still be sufficiently accurate for the range from -1000 to 3000. Outside of this range, the potential for error is higher.
 
 ## Usage
 

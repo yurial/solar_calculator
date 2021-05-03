@@ -1,10 +1,10 @@
 name: solar_calculator
-description: Calculates the apparent position of the sun, sunrise, sunset, noon and the different twilights times for a given moment in time and position on Earth.
+description: Dart library that calculates the apparent position of the Sun, the sunrise, sunset, solar noon times and the different twilights periods for a given moment in time and position on Earth.
 version: 1.0.0
-# homepage: https://www.example.com
+homepage: https://github.com/mikljacq/solar_calculator
 
 environment:
-  sdk: '>=2.12.2 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 #dependencies:
 #  path: ^1.7.0

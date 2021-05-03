@@ -41,17 +41,6 @@ class Earth {
         5.79,
         2.45
       ]);
-      // _meanObliquityOfEcliptic = Angle(degrees: 23, minutes: 26, seconds: 21.448).degrees -
-      //     Angle(seconds: 4680.93).degrees * u -
-      //     1.55 * pow(u, 2) +
-      //     1999.25 * pow(u, 3) -
-      //     51.38 * pow(u, 4) -
-      //     249.67 * pow(u, 5) -
-      //     39.05 * pow(u, 6) +
-      //     7.12 * pow(u, 7) +
-      //     27.87 * pow(u, 8) +
-      //     5.79 * pow(u, 9) +
-      //     2.45 * pow(u, 10);
     }
 
     return _meanObliquityOfEcliptic!;
@@ -66,7 +55,6 @@ class Earth {
   /// The eccentricity refers to the "flatness" of the ellipse swept out by the Earth in its orbit around the Sun.
   double get orbitalEccentricity => _earthOrbitalEccentricity ??=
       evaluatePolynomial(julianDate.julianCenturies, [0.016708634, -0.000042037, -0.0000001267]);
-  //0.016708634 - (0.000042037 * _julianCenturies) - (0.0000001267 * pow(_julianCenturies, 2));
 
   /// The correction factor for nutation and aberration.
   ///

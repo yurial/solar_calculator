@@ -72,8 +72,7 @@ class Sun {
   double get meanLongitude {
     if (_meanLongitude == null) {
       var l0 = evaluatePolynomial(julianDate.julianCenturies, [280.46646, 36000.76983, 0.0003032]);
-      // var l0 = 280.46646 + (36000.76983 * _julianCenturies) + (0.0003032 * pow(_julianCenturies, 2));
-      _meanLongitude = l0.correctedDegrees;
+      _meanLongitude = l0.correctDegreesForLargeAngles();
     }
 
     return _meanLongitude!;
@@ -88,14 +87,13 @@ class Sun {
   /// Note that the word "apparent" is always used to denote that the Sun, planets, and stars appear to move across the
   /// sky in a 24-hour period. Obviously, the true movement is the rotation of the Earth on its axis but it is convenient
   /// to talk of the apparent motion of the Sun and planets across the sky.
-  double get meanAnomaly => _meanAnomaly ??= uncorrectedMeanAnomaly.correctedDegrees;
+  double get meanAnomaly => _meanAnomaly ??= uncorrectedMeanAnomaly.correctDegreesForLargeAngles();
 
   /// The geometric mean anomaly of the Sun in degrees, uncorrected for large angles.
   ///
   /// See [meanAnomaly].
   double get uncorrectedMeanAnomaly =>
       _uncorrectedMeanAnomaly ??= evaluatePolynomial(julianDate.julianCenturies, [357.52911, 35999.05029, -0.0001537]);
-  //357.52911 + (35999.05029 * _julianCenturies) - (0.0001537 * pow(_julianCenturies, 2));
 
   /// The Sun's equation of center, in degrees.
   ///
@@ -126,18 +124,18 @@ class Sun {
   /// In celestial mechanics, true longitude is the ecliptic longitude at which an orbiting body could actually be found if
   /// its inclination were zero. Together with the inclination and the ascending node, the true longitude can tell us
   /// the precise direction from the central object at which the body would be located at a particular time.
-  double get trueLongitude => _trueLongitude ??= (meanLongitude + equationOfCenter).correctedDegrees;
+  double get trueLongitude => _trueLongitude ??= (meanLongitude + equationOfCenter).correctDegreesForLargeAngles();
 
   /// The true anomaly of the Sun in degrees.
   ///
   /// In celestial mechanics, true anomaly is an angular parameter that defines the position of a body moving along a
   /// Keplerian orbit. It is the angle between the direction of periapsis and the current position of the body, as seen
-  /// from the main focus of the ellipse (the point around which the object orbits).
-  double get trueAnomaly => _trueAnomaly ??= (meanAnomaly + equationOfCenter).correctedDegrees;
+  /// from the main focus of the ellipse (the point around which the object orbits)
+  double get trueAnomaly => _trueAnomaly ??= (meanAnomaly + equationOfCenter).correctDegreesForLargeAngles();
 
-  /// The radius vector in AUs.
+  /// The radius vector in Astronomical Units.
   ///
-  /// It is the distance (measured in astronomical units or AU) between the center of the Sun and the center of the Earth.
+  /// It is the distance between the center of the Sun and the center of the Earth.
   double get radiusVector {
     // var v = sunTrueAnomaly;
     // var e = earthOrbitalEccentricity;
@@ -151,13 +149,11 @@ class Sun {
     }
 
     return _radiusVector!;
-
-    // return r;
   }
 
   /// The apparent longitude of the Sun in degrees.
   ///
-  /// Apparent longitude is celestial longitude corrected for aberration and nutation as opposed to mean longitude.
+  /// Apparent longitude is the celestial longitude corrected for aberration and nutation as opposed to mean longitude.
   double get apparentLongitude => _apparentLongitude ??=
       trueLongitude - 0.00569 - (0.00478 * sin(Earth(julianDate).nutationAndAberrationCorrection.toRadians()));
 
@@ -257,16 +253,9 @@ class Sun {
       double correction;
 
       if (elevation > 5.0) {
-        // correction = (58.1 / tanElevation) - (0.07 / pow(tanElevation, 3)) + (0.000086 / pow(tanElevation, 5));
         correction = evaluatePolynomial(1 / tanElevation, [0, 58.1, 0, -0.07, 0, 0.000086]);
       } else if (elevation > -0.575) {
-        //correction = 1735.0 + elevation * (-518.2 + elevation * (103.4 + elevation * (-12.79 + elevation * 0.711)));
         correction = evaluatePolynomial(elevation, [1735, -518.2, 103.4, -12.79, 0.711]);
-        // correction = 1735.0 -
-        //     (518.2 * elevation) +
-        //     (103.4 * pow(elevation, 2)) -
-        //     (12.79 * pow(elevation, 3)) +
-        //     (0.711 * pow(elevation, 4));
       } else {
         correction = -20.774 / tanElevation;
       }
