@@ -8,7 +8,10 @@ class HourAngle {
 
   /// The corresponding angle decimal value in degrees.
   double get decimalDegrees =>
-      (arcHours + (arcMinutes / Duration.minutesPerHour) + (arcSeconds / Duration.secondsPerHour)) * 15;
+      (arcHours +
+          (arcMinutes / Duration.minutesPerHour) +
+          (arcSeconds / Duration.secondsPerHour)) *
+      15;
 
   /// Creates an [HourAngle] from its decimal value in [degrees].
   HourAngle.fromDegrees(double degrees) {
@@ -24,7 +27,8 @@ class HourAngle {
   ///
   /// In this representation, the number of seconds is represented with two decimal digits.
   @override
-  String toString() => '${arcHours}h ${arcMinutes}m ${arcSeconds.toStringAsFixed(2)}s';
+  String toString() =>
+      '${arcHours}h ${arcMinutes}m ${arcSeconds.toStringAsFixed(2)}s';
 
   void _initializeFromDegrees(double degrees) {
     var d = (degrees < 0) ? degrees + 360 : degrees;

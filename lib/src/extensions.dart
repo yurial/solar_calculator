@@ -40,8 +40,12 @@ extension DateTimeExtension on DateTime {
   }
 
   /// The time of this [DateTime] as [Duration].
-  Duration get time =>
-      Duration(hours: hour, minutes: minute, seconds: second, milliseconds: millisecond, microseconds: microsecond);
+  Duration get time => Duration(
+      hours: hour,
+      minutes: minute,
+      seconds: second,
+      milliseconds: millisecond,
+      microseconds: microsecond);
 
   /// Is this [DateTime] in a leap year.
   ///
@@ -54,7 +58,10 @@ extension DateTimeExtension on DateTime {
   /// The day of year of this [DateTime].
   int get dayOfYear {
     var k = (isLeapYear ? 1 : 2);
-    return ((275 * month) / 9).floor() - (k * ((month + 9) / 12).floor()) + day - 30;
+    return ((275 * month) / 9).floor() -
+        (k * ((month + 9) / 12).floor()) +
+        day -
+        30;
   }
 
   /// The corresponding [JulianDate] of this [DateTime].
@@ -75,5 +82,6 @@ extension DurationExtension on Duration {
   double get totalSeconds => inMicroseconds / Duration.microsecondsPerSecond;
 
   /// The total number of milliseconds spanned by this [Duration], expressed in whole and fractional milliseconds.
-  double get totalMilliseconds => inMicroseconds / Duration.microsecondsPerMillisecond;
+  double get totalMilliseconds =>
+      inMicroseconds / Duration.microsecondsPerMillisecond;
 }

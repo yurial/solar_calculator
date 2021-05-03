@@ -61,7 +61,11 @@ class JulianDate {
       b = 2 - a + (a / 4).floor();
     }
 
-    julianDay = (365.25 * (year + 4716)).floor() + (30.6001 * (month + 1)).floor() + day + b - 1524.5;
+    julianDay = (365.25 * (year + 4716)).floor() +
+        (30.6001 * (month + 1)).floor() +
+        day +
+        b -
+        1524.5;
   }
 
   /// Convert this [JulianDate] to a Gregorian [DateTime].
@@ -74,7 +78,8 @@ class JulianDate {
     if (modfJulianDay.integerPart < 2299161) {
       a = modfJulianDay.integerPart;
     } else {
-      final alpha = ((modfJulianDay.integerPart - 1867216.25) / 36524.25).floor();
+      final alpha =
+          ((modfJulianDay.integerPart - 1867216.25) / 36524.25).floor();
       a = modfJulianDay.integerPart + 1 + alpha - (alpha / 4).floor();
     }
 

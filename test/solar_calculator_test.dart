@@ -104,9 +104,11 @@ void main() {
     '80° 12°': {
       'latitude': 80.0,
       'longitude': 12.0,
-      'sunrise': DateTime.utc(2021, 04, 13).add(Timespan.fromMinutes(-11.654374107739168)),
+      'sunrise': DateTime.utc(2021, 04, 13)
+          .add(Timespan.fromMinutes(-11.654374107739168)),
       'noon': refDate.add(Duration(hours: 11, minutes: 08)),
-      'sunset': DateTime.utc(2021, 08, 30).add(Timespan.fromMinutes(1349.7335155238095)),
+      'sunset': DateTime.utc(2021, 08, 30)
+          .add(Timespan.fromMinutes(1349.7335155238095)),
       'declination': 15.55,
       'azimuth': 216.22,
       'elevation': 23.76,
@@ -114,9 +116,11 @@ void main() {
     '-80° 12°': {
       'latitude': -80.0,
       'longitude': 12.0,
-      'sunrise': DateTime.utc(2021, 08, 25).add(Timespan.fromMinutes(644.7320304778677)),
+      'sunrise': DateTime.utc(2021, 08, 25)
+          .add(Timespan.fromMinutes(644.7320304778677)),
       'noon': refDate.add(Duration(hours: 11, minutes: 08)),
-      'sunset': DateTime.utc(2021, 04, 18).add(Timespan.fromMinutes(678.971344895073)),
+      'sunset': DateTime.utc(2021, 04, 18)
+          .add(Timespan.fromMinutes(678.971344895073)),
       'declination': 15.55,
       'azimuth': 326.96,
       'elevation': -7.16,
@@ -124,9 +128,11 @@ void main() {
     '90° 12°': {
       'latitude': 90.0,
       'longitude': 12.0,
-      'sunrise': DateTime.utc(2020, 03, 18).add(Timespan.fromMinutes(370.22985636407043)),
+      'sunrise': DateTime.utc(2020, 03, 18)
+          .add(Timespan.fromMinutes(370.22985636407043)),
       'noon': refDate.add(Duration(hours: 11, minutes: 08)),
-      'sunset': DateTime.utc(2021, 09, 25).add(Timespan.fromMinutes(972.5818948340684)),
+      'sunset': DateTime.utc(2021, 09, 25)
+          .add(Timespan.fromMinutes(972.5818948340684)),
       'declination': 15.56,
       'azimuth': 214.17,
       'elevation': 15.69,
@@ -137,31 +143,46 @@ void main() {
     group(entry.key, () {
       var expected = expectedResults[entry.key]!;
 
-      var calc = SolarCalculator(date, expected['latitude'], expected['longitude']);
+      var calc =
+          SolarCalculator(date, expected['latitude'], expected['longitude']);
 
       test('Sunrise', () {
-        var sunrise = calc.sunriseTime.difference(expected['sunrise']).inSeconds.abs() <= _kTimesAccuracyInSec;
+        var sunrise =
+            calc.sunriseTime.difference(expected['sunrise']).inSeconds.abs() <=
+                _kTimesAccuracyInSec;
         expect(sunrise, true);
       });
 
       test('Sunset', () {
-        var sunset = calc.sunsetTime.difference(expected['sunset']).inSeconds.abs() <= _kTimesAccuracyInSec;
+        var sunset =
+            calc.sunsetTime.difference(expected['sunset']).inSeconds.abs() <=
+                _kTimesAccuracyInSec;
         expect(sunset, true);
       });
 
       test('Transit', () {
-        var transit = calc.sunTransitTime.difference(expected['noon']).inSeconds.abs() <= _kTimesAccuracyInSec;
+        var transit =
+            calc.sunTransitTime.difference(expected['noon']).inSeconds.abs() <=
+                _kTimesAccuracyInSec;
         expect(transit, true);
       });
 
       test('Sun Declination', () {
-        var declination = (calc.sunEquatorialPosition.declination - expected['declination']).abs() <= _kAnglesAccuracy;
+        var declination =
+            (calc.sunEquatorialPosition.declination - expected['declination'])
+                    .abs() <=
+                _kAnglesAccuracy;
         expect(declination, true);
       });
 
       test('Sun Horizontal position', () {
-        var azimuth = (calc.sunHorizontalPosition.azimuth - expected['azimuth']).abs() <= _kAnglesAccuracy;
-        var elevation = (calc.sunHorizontalPosition.elevation - expected['elevation']).abs() <= _kAnglesAccuracy;
+        var azimuth =
+            (calc.sunHorizontalPosition.azimuth - expected['azimuth']).abs() <=
+                _kAnglesAccuracy;
+        var elevation =
+            (calc.sunHorizontalPosition.elevation - expected['elevation'])
+                    .abs() <=
+                _kAnglesAccuracy;
 
         expect(azimuth, true);
         expect(elevation, true);

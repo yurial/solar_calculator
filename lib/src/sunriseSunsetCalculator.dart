@@ -20,12 +20,14 @@ class SunriseSunsetCalculator {
   final double latitude;
   final double longitude;
 
-  SunriseSunsetCalculator(this.date, this.latitude, this.longitude, {this.sunZenithDistance = 90.833});
+  SunriseSunsetCalculator(this.date, this.latitude, this.longitude,
+      {this.sunZenithDistance = 90.833});
 
   double _calculateSunriseMinutes(JulianDate julianDate) {
     var sun = Sun(julianDate);
 
-    var hourAngle = _calculateSolarHourAngleForSunriseSunset(sun.equatorialPosition.declination);
+    var hourAngle = _calculateSolarHourAngleForSunriseSunset(
+        sun.equatorialPosition.declination);
 
     // 1 degree of longitude = 4 minutes
     // 720 = noon time in minutes
@@ -35,7 +37,8 @@ class SunriseSunsetCalculator {
   double _calculateSunsetMinutes(JulianDate julianDate) {
     var sun = Sun(julianDate);
 
-    var hourAngle = _calculateSolarHourAngleForSunriseSunset(sun.equatorialPosition.declination);
+    var hourAngle = _calculateSolarHourAngleForSunriseSunset(
+        sun.equatorialPosition.declination);
 
     // 1 degree of longitude = 4 minutes
     // 720 = noon time in minutes
@@ -46,10 +49,12 @@ class SunriseSunsetCalculator {
     var julianDate = JulianDate.fromDateTime(date.midnightUtc);
 
     var tNoon = (julianDate - Timespan.fromDays(longitude / 360));
-    var solarNoonOffset = 720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
+    var solarNoonOffset =
+        720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
 
     tNoon = (julianDate + Timespan.fromMinutes(solarNoonOffset));
-    var solarNoonUtc = 720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
+    var solarNoonUtc =
+        720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
 
     return julianDate.gregorianDateTime.add(Timespan.fromMinutes(solarNoonUtc));
   }
@@ -58,8 +63,10 @@ class SunriseSunsetCalculator {
     var julianDate = JulianDate.fromDateTime(date.midnightUtc);
 
     var sunriseTime = _calculateSunriseMinutes(julianDate);
-    var newSunriseTime =
-        sunriseTime.isNaN ? double.nan : _calculateSunriseMinutes(julianDate + Timespan.fromMinutes(sunriseTime));
+    var newSunriseTime = sunriseTime.isNaN
+        ? double.nan
+        : _calculateSunriseMinutes(
+            julianDate + Timespan.fromMinutes(sunriseTime));
 
     if (newSunriseTime.isNaN) {
       // No sunrise found
@@ -74,7 +81,8 @@ class SunriseSunsetCalculator {
         return _calculateNextSunrise();
       }
     } else {
-      return julianDate.gregorianDateTime.add(Timespan.fromMinutes(newSunriseTime));
+      return julianDate.gregorianDateTime
+          .add(Timespan.fromMinutes(newSunriseTime));
     }
   }
 
@@ -82,8 +90,10 @@ class SunriseSunsetCalculator {
     var julianDate = JulianDate.fromDateTime(date.midnightUtc);
 
     var sunsetTime = _calculateSunsetMinutes(julianDate);
-    var newSunsetTime =
-        sunsetTime.isNaN ? double.nan : _calculateSunsetMinutes(julianDate + Timespan.fromMinutes(sunsetTime));
+    var newSunsetTime = sunsetTime.isNaN
+        ? double.nan
+        : _calculateSunsetMinutes(
+            julianDate + Timespan.fromMinutes(sunsetTime));
 
     if (newSunsetTime.isNaN) {
       // No sunset found
@@ -98,19 +108,25 @@ class SunriseSunsetCalculator {
         return _calculatePreviousSunset();
       }
     } else {
-      return julianDate.gregorianDateTime.add(Timespan.fromMinutes(newSunsetTime));
+      return julianDate.gregorianDateTime
+          .add(Timespan.fromMinutes(newSunsetTime));
     }
   }
 
-  DateTime _calculateNextSunrise() => _calculateNextPreviousEvent(Duration(days: 1), _calculateSunriseMinutes);
+  DateTime _calculateNextSunrise() =>
+      _calculateNextPreviousEvent(Duration(days: 1), _calculateSunriseMinutes);
 
-  DateTime _calculatePreviousSunrise() => _calculateNextPreviousEvent(Duration(days: -1), _calculateSunriseMinutes);
+  DateTime _calculatePreviousSunrise() =>
+      _calculateNextPreviousEvent(Duration(days: -1), _calculateSunriseMinutes);
 
-  DateTime _calculateNextSunset() => _calculateNextPreviousEvent(Duration(days: 1), _calculateSunsetMinutes);
+  DateTime _calculateNextSunset() =>
+      _calculateNextPreviousEvent(Duration(days: 1), _calculateSunsetMinutes);
 
-  DateTime _calculatePreviousSunset() => _calculateNextPreviousEvent(Duration(days: -1), _calculateSunsetMinutes);
+  DateTime _calculatePreviousSunset() =>
+      _calculateNextPreviousEvent(Duration(days: -1), _calculateSunsetMinutes);
 
-  DateTime _calculateNextPreviousEvent(Duration duration, double Function(JulianDate julianDate) getEvent) {
+  DateTime _calculateNextPreviousEvent(
+      Duration duration, double Function(JulianDate julianDate) getEvent) {
     var dateTime = date.midnightUtc;
 
     var julianDate = JulianDate.fromDateTime(dateTime);
@@ -137,7 +153,9 @@ class SunriseSunsetCalculator {
   /// and before and after solar noon the cos(± h) term = the same value for morning (negative hour angle) or afternoon (positive hour angle),
   /// i.e. the sun is at the same altitude in the sky at 11:00AM and 1:00PM solar time, etc.
   double _calculateSolarHourAngleForSunriseSunset(double sunDeclination) =>
-      acos((cos(sunZenithDistance.toRadians()) / (cos(latitude.toRadians()) * cos(sunDeclination.toRadians()))) -
+      acos((cos(sunZenithDistance.toRadians()) /
+                  (cos(latitude.toRadians()) *
+                      cos(sunDeclination.toRadians()))) -
               (tan(latitude.toRadians()) * tan(sunDeclination.toRadians())))
           .toDegrees();
 }
