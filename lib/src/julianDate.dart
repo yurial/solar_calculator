@@ -77,6 +77,7 @@ class JulianDate {
       final alpha = ((modfJulianDay.integerPart - 1867216.25) / 36524.25).floor();
       a = modfJulianDay.integerPart + 1 + alpha - (alpha / 4).floor();
     }
+
     final b = a + 1524;
     final c = ((b - 122.1) / 365.25).floor();
     final d = (365.25 * c).floor();

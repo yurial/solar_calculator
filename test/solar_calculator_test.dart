@@ -140,32 +140,28 @@ void main() {
       var calc = SolarCalculator(date, expected['latitude'], expected['longitude']);
 
       test('Sunrise', () {
-        var sunrise =
-            calc.calculateSunriseTime().difference(expected['sunrise']).inSeconds.abs() <= _kTimesAccuracyInSec;
+        var sunrise = calc.sunriseTime.difference(expected['sunrise']).inSeconds.abs() <= _kTimesAccuracyInSec;
         expect(sunrise, true);
       });
 
       test('Sunset', () {
-        var sunset = calc.calculateSunseTime().difference(expected['sunset']).inSeconds.abs() <= _kTimesAccuracyInSec;
+        var sunset = calc.sunsetTime.difference(expected['sunset']).inSeconds.abs() <= _kTimesAccuracyInSec;
         expect(sunset, true);
       });
 
       test('Transit', () {
-        var transit =
-            calc.calculateSunTransitTime().difference(expected['noon']).inSeconds.abs() <= _kTimesAccuracyInSec;
+        var transit = calc.sunTransitTime.difference(expected['noon']).inSeconds.abs() <= _kTimesAccuracyInSec;
         expect(transit, true);
       });
 
       test('Sun Declination', () {
-        var declination =
-            (calc.calculateSunEquatorialPosition().declination - expected['declination']).abs() <= _kAnglesAccuracy;
+        var declination = (calc.sunEquatorialPosition.declination - expected['declination']).abs() <= _kAnglesAccuracy;
         expect(declination, true);
       });
 
       test('Sun Horizontal position', () {
-        var horizontalSunPosition = calc.calculateSunHorizontalPosition();
-        var azimuth = (horizontalSunPosition.azimuth - expected['azimuth']).abs() <= _kAnglesAccuracy;
-        var elevation = (horizontalSunPosition.elevation - expected['elevation']).abs() <= _kAnglesAccuracy;
+        var azimuth = (calc.sunHorizontalPosition.azimuth - expected['azimuth']).abs() <= _kAnglesAccuracy;
+        var elevation = (calc.sunHorizontalPosition.elevation - expected['elevation']).abs() <= _kAnglesAccuracy;
 
         expect(azimuth, true);
         expect(elevation, true);

@@ -186,15 +186,10 @@ class Sun {
 
   /// Gets the apparent position of the Sun in the Horizontal Coordinate System.
   HorizontalCoordinate horizontalPosition(double latitude, double longitude) {
-    var timeOffset = equationOfTime + (4.0 * longitude); // - 60.0 * zone
-    // var earthRadVec = calcSunRadVector(T)
-    var utcTime = julianDate.gregorianDateTime.toUtc();
-    var time = Duration(
-        hours: utcTime.hour,
-        minutes: utcTime.minute,
-        seconds: utcTime.second,
-        milliseconds: utcTime.millisecond,
-        microseconds: utcTime.microsecond);
+    var timeOffset = equationOfTime + (4.0 * longitude);
+
+    var utcDateTime = julianDate.gregorianDateTime.toUtc();
+    var time = utcDateTime.time;
 
     var trueSolarTime = time.totalMinutes + timeOffset;
 
@@ -210,14 +205,14 @@ class Sun {
     var hourAngleRadians = hourAngle.toRadians();
 
     // Calculate the cosinus of the solar zenith angle.
-    var csz = (sin(latitudeRadians) * sin(sunDeclinationRadians)) +
+    var cosinusSolarZenith = (sin(latitudeRadians) * sin(sunDeclinationRadians)) +
         (cos(latitudeRadians) * cos(sunDeclinationRadians) * cos(hourAngleRadians));
 
-    if (csz > 1.0) {
-      csz = 1.0;
-    } else if (csz < -1.0) csz = -1.0;
+    if (cosinusSolarZenith > 1.0) {
+      cosinusSolarZenith = 1.0;
+    } else if (cosinusSolarZenith < -1.0) cosinusSolarZenith = -1.0;
 
-    var zenithRadians = acos(csz);
+    var zenithRadians = acos(cosinusSolarZenith);
     var zenith = zenithRadians.toDegrees();
     var azimuthDenominator = cos(latitudeRadians) * sin(zenithRadians);
 
@@ -238,10 +233,8 @@ class Sun {
 
     if (azimuth < 0.0) azimuth += 360.0;
 
-    var exoatmElevation = 90.0 - zenith;
-
     // Atmospheric Refraction correction
-    var refractionCorrection = _calculateAtmosphericRefractionCorrection(exoatmElevation);
+    var refractionCorrection = _calculateAtmosphericRefractionCorrection(90.0 - zenith);
 
     var correctedSolarZenith = zenith - refractionCorrection;
     var elevation = 90.0 - correctedSolarZenith;

@@ -39,6 +39,10 @@ extension DateTimeExtension on DateTime {
     return DateTime.utc(utc.year, utc.month, utc.day, 12);
   }
 
+  /// The time of this [DateTime] as [Duration].
+  Duration get time =>
+      Duration(hours: hour, minutes: minute, seconds: second, milliseconds: millisecond, microseconds: microsecond);
+
   /// Is this [DateTime] in a leap year.
   ///
   /// In the Gregorian calendar, three criteria must be taken into account to identify leap years:

@@ -8,56 +8,48 @@ void main() {
 
   var calc = SolarCalculator(date, latitude, longitude);
 
-  var sunEquatorialPosition = calc.calculateSunEquatorialPosition();
   print('Sun Equatorial position:');
   print(
-      '    Right ascension: ${sunEquatorialPosition.rightAscension} = ${sunEquatorialPosition.rightAscension.decimalDegrees}');
-  print('    Declination: ${sunEquatorialPosition.declination}');
+      '    Right ascension: ${calc.sunEquatorialPosition.rightAscension} = ${calc.sunEquatorialPosition.rightAscension.decimalDegrees}');
+  print('    Declination: ${calc.sunEquatorialPosition.declination}');
 
-  var sunHorizontalPosition = calc.calculateSunHorizontalPosition();
   print('Sun Horizontal position:');
-  print('    Azimuth: ${sunHorizontalPosition.azimuth}');
-  print('    Elevation: ${sunHorizontalPosition.elevation}');
+  print('    Azimuth: ${calc.sunHorizontalPosition.azimuth}');
+  print('    Elevation: ${calc.sunHorizontalPosition.elevation}');
 
-  var morningAstronomicalTwilight = calc.calculateMorningAstronomicalTwilight();
   print('Morning astronomical twilight:');
-  print('    Begining: ${morningAstronomicalTwilight.begining}');
-  print('    Ending: ${morningAstronomicalTwilight.ending}');
-  print('    Duration: ${morningAstronomicalTwilight.duration}');
+  print('    Begining: ${calc.morningAstronomicalTwilight.begining}');
+  print('    Ending: ${calc.morningAstronomicalTwilight.ending}');
+  print('    Duration: ${calc.morningAstronomicalTwilight.duration}');
 
-  var morningNauticalTwilight = calc.calculateMorningNauticalTwilight();
   print('Morning nautical twilight:');
-  print('    Begining: ${morningNauticalTwilight.begining}');
-  print('    Ending: ${morningNauticalTwilight.ending}');
-  print('    Duration: ${morningNauticalTwilight.duration}');
+  print('    Begining: ${calc.morningNauticalTwilight.begining}');
+  print('    Ending: ${calc.morningNauticalTwilight.ending}');
+  print('    Duration: ${calc.morningNauticalTwilight.duration}');
 
-  var morningCivilTwilight = calc.calculateMorningCivilTwilight();
   print('Morning civil twilight:');
-  print('    Begining: ${morningCivilTwilight.begining}');
-  print('    Ending: ${morningCivilTwilight.ending}');
-  print('    Duration: ${morningCivilTwilight.duration}');
+  print('    Begining: ${calc.morningCivilTwilight.begining}');
+  print('    Ending: ${calc.morningCivilTwilight.ending}');
+  print('    Duration: ${calc.morningCivilTwilight.duration}');
 
-  print('Sunrise: ${calc.calculateSunriseTime()}');
-  print('Noon: ${calc.calculateSunTransitTime()}');
-  print('Sunset: ${calc.calculateSunseTime()}');
+  print('Sunrise: ${calc.sunriseTime}');
+  print('Noon: ${calc.sunTransitTime}');
+  print('Sunset: ${calc.sunsetTime}');
 
-  var eveningCivilTwilight = calc.calculateEveningCivilTwilight();
   print('Evening civil twilight:');
-  print('    Begining: ${eveningCivilTwilight.begining}');
-  print('    Ending: ${eveningCivilTwilight.ending}');
-  print('    Duration: ${eveningCivilTwilight.duration}');
+  print('    Begining: ${calc.eveningCivilTwilight.begining}');
+  print('    Ending: ${calc.eveningCivilTwilight.ending}');
+  print('    Duration: ${calc.eveningCivilTwilight.duration}');
 
-  var eveningNauticalTwilight = calc.calculateEveningNauticalTwilight();
   print('Evening nautical twilight:');
-  print('    Begining: ${eveningNauticalTwilight.begining}');
-  print('    Ending: ${eveningNauticalTwilight.ending}');
-  print('    Duration: ${eveningNauticalTwilight.duration}');
+  print('    Begining: ${calc.eveningNauticalTwilight.begining}');
+  print('    Ending: ${calc.eveningNauticalTwilight.ending}');
+  print('    Duration: ${calc.eveningNauticalTwilight.duration}');
 
-  var eveningAstronomicalTwilight = calc.calculateEveningAstronomicalTwilight();
   print('Evening astronomical twilight:');
-  print('    Begining: ${eveningAstronomicalTwilight.begining}');
-  print('    Ending: ${eveningAstronomicalTwilight.ending}');
-  print('    Duration: ${eveningAstronomicalTwilight.duration}');
+  print('    Begining: ${calc.eveningAstronomicalTwilight.begining}');
+  print('    Ending: ${calc.eveningAstronomicalTwilight.ending}');
+  print('    Duration: ${calc.eveningAstronomicalTwilight.duration}');
 
   if (calc.isHoursOfDarkness) print('===> IS DARK <===');
 }

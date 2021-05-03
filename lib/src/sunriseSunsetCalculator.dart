@@ -42,6 +42,18 @@ class SunriseSunsetCalculator {
     return 720 - 4 * (longitude - hourAngle) - sun.equationOfTime;
   }
 
+  DateTime calculateSunTransitTime() {
+    var julianDate = JulianDate.fromDateTime(date.midnightUtc);
+
+    var tNoon = (julianDate - Timespan.fromDays(longitude / 360));
+    var solarNoonOffset = 720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
+
+    tNoon = (julianDate + Timespan.fromMinutes(solarNoonOffset));
+    var solarNoonUtc = 720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
+
+    return date.midnightUtc.add(Timespan.fromMinutes(solarNoonUtc));
+  }
+
   DateTime calculateSunrise() {
     var julianDate = JulianDate.fromDateTime(date.midnightUtc);
 
@@ -51,7 +63,7 @@ class SunriseSunsetCalculator {
 
     if (newSunriseTime.isNaN) {
       // No sunrise found
-      var dayOfYear = date.midnightUtc.dayOfYear;
+      var dayOfYear = julianDate.gregorianDateTime.dayOfYear;
 
       if ((latitude > 66.4 && dayOfYear > 79 && dayOfYear < 267) ||
           (latitude < -66.4 && (dayOfYear < 83 || dayOfYear > 263))) {
@@ -62,7 +74,7 @@ class SunriseSunsetCalculator {
         return _calculateNextSunrise();
       }
     } else {
-      return date.midnightUtc.add(Timespan.fromMinutes(newSunriseTime));
+      return julianDate.gregorianDateTime.add(Timespan.fromMinutes(newSunriseTime));
     }
   }
 
@@ -75,7 +87,7 @@ class SunriseSunsetCalculator {
 
     if (newSunsetTime.isNaN) {
       // No sunset found
-      var dayOfYear = date.midnightUtc.dayOfYear;
+      var dayOfYear = julianDate.gregorianDateTime.dayOfYear;
 
       if ((latitude > 66.4 && dayOfYear > 79 && dayOfYear < 267) ||
           (latitude < -66.4 && (dayOfYear < 83 || dayOfYear > 263))) {
@@ -86,7 +98,7 @@ class SunriseSunsetCalculator {
         return _calculatePreviousSunset();
       }
     } else {
-      return date.midnightUtc.add(Timespan.fromMinutes(newSunsetTime));
+      return julianDate.gregorianDateTime.add(Timespan.fromMinutes(newSunsetTime));
     }
   }
 
