@@ -51,7 +51,7 @@ class SunriseSunsetCalculator {
     tNoon = (julianDate + Timespan.fromMinutes(solarNoonOffset));
     var solarNoonUtc = 720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
 
-    return date.midnightUtc.add(Timespan.fromMinutes(solarNoonUtc));
+    return julianDate.gregorianDateTime.add(Timespan.fromMinutes(solarNoonUtc));
   }
 
   DateTime calculateSunrise() {
@@ -110,28 +110,25 @@ class SunriseSunsetCalculator {
 
   DateTime _calculatePreviousSunset() => _calculatePreviousEvent(_calculateSunsetMinutes);
 
-  DateTime _calculatePreviousEvent(double Function(JulianDate julianDate) getEvent) {
-    var julianDate = JulianDate.fromDateTime(date.midnightUtc);
+  DateTime _calculatePreviousEvent(double Function(JulianDate julianDate) getEvent) =>
+      _calculateNextPreviousEvent(Duration(days: -1), getEvent);
+
+  DateTime _calculateNextEvent(double Function(JulianDate julianDate) getEvent) =>
+      _calculateNextPreviousEvent(Duration(days: 1), getEvent);
+
+  DateTime _calculateNextPreviousEvent(Duration duration, double Function(JulianDate julianDate) getEvent) {
+    var dateTime = date.midnightUtc;
+
+    var julianDate = JulianDate.fromDateTime(dateTime);
     var time = getEvent(julianDate);
 
     while (time.isNaN) {
-      julianDate -= Duration(days: 1);
+      julianDate += duration;
+      dateTime = dateTime.add(duration);
       time = getEvent(julianDate);
     }
 
-    return julianDate.gregorianDateTime.midnightUtc.add(Timespan.fromMinutes(time));
-  }
-
-  DateTime _calculateNextEvent(double Function(JulianDate julianDate) getEvent) {
-    var julianDate = JulianDate.fromDateTime(date.midnightUtc);
-    var time = getEvent(julianDate);
-
-    while (time.isNaN) {
-      julianDate += Duration(days: 1);
-      time = getEvent(julianDate);
-    }
-
-    return julianDate.gregorianDateTime.midnightUtc.add(Timespan.fromMinutes(time));
+    return dateTime.midnightUtc.add(Timespan.fromMinutes(time));
   }
 
   /// Gets the solar hour angle in degrees for sunset and sunrise calculation, corrected for atmospheric refraction,

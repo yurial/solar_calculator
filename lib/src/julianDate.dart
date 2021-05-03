@@ -96,12 +96,12 @@ class JulianDate {
   }
 
   JulianDate operator +(Duration duration) {
-    _gregorianDateTime = _gregorianDateTime?.add(duration);
+    // _gregorianDateTime = _gregorianDateTime?.add(duration);
     return JulianDate(julianDay + duration.totalDays);
   }
 
   JulianDate operator -(Duration duration) {
-    _gregorianDateTime = _gregorianDateTime?.subtract(duration);
+    // _gregorianDateTime = _gregorianDateTime?.subtract(duration);
     return JulianDate(julianDay - duration.totalDays);
   }
 

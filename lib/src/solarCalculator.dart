@@ -1,9 +1,7 @@
 import 'package:solar_calculator/src/celestialBodies/sun.dart';
 
-import 'timespan.dart';
 import 'coordinateSystems/equatorialCoordinate.dart';
 import 'coordinateSystems/horizontalCoordinate.dart';
-import 'julianDate.dart';
 import 'extensions.dart';
 import 'sunriseSunsetCalculator.dart';
 import 'twilight.dart';
