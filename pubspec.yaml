@@ -1,6 +1,6 @@
 name: solar_calculator
 description: Calculates the apparent position of the sun, sunrise, sunset, noon and the different twilights times for a given moment in time and position on Earth.
-version: 0.0.1
+version: 1.0.0
 # homepage: https://www.example.com
 
 environment:

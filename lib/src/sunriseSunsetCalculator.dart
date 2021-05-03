@@ -102,19 +102,13 @@ class SunriseSunsetCalculator {
     }
   }
 
-  DateTime _calculateNextSunrise() => _calculateNextEvent(_calculateSunriseMinutes);
+  DateTime _calculateNextSunrise() => _calculateNextPreviousEvent(Duration(days: 1), _calculateSunriseMinutes);
 
-  DateTime _calculatePreviousSunrise() => _calculatePreviousEvent(_calculateSunriseMinutes);
+  DateTime _calculatePreviousSunrise() => _calculateNextPreviousEvent(Duration(days: -1), _calculateSunriseMinutes);
 
-  DateTime _calculateNextSunset() => _calculateNextEvent(_calculateSunsetMinutes);
+  DateTime _calculateNextSunset() => _calculateNextPreviousEvent(Duration(days: 1), _calculateSunsetMinutes);
 
-  DateTime _calculatePreviousSunset() => _calculatePreviousEvent(_calculateSunsetMinutes);
-
-  DateTime _calculatePreviousEvent(double Function(JulianDate julianDate) getEvent) =>
-      _calculateNextPreviousEvent(Duration(days: -1), getEvent);
-
-  DateTime _calculateNextEvent(double Function(JulianDate julianDate) getEvent) =>
-      _calculateNextPreviousEvent(Duration(days: 1), getEvent);
+  DateTime _calculatePreviousSunset() => _calculateNextPreviousEvent(Duration(days: -1), _calculateSunsetMinutes);
 
   DateTime _calculateNextPreviousEvent(Duration duration, double Function(JulianDate julianDate) getEvent) {
     var dateTime = date.midnightUtc;
