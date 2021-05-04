@@ -4,7 +4,7 @@ void main() {
   var latitude = 41.29708;
   var longitude = 2.07846;
 
-  var date = DateTime(2021, 04, 29, 19, 54);
+  var date = DateTime.now();
 
   var calc = SolarCalculator(date, latitude, longitude);
 
