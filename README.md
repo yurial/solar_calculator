@@ -14,7 +14,7 @@ For a given moment in time and position on Earth:
 * Get the morning and evening astronomical twilights (begining and ending times in UTC);
 * Get the morning and evening nautical twilights (begining and ending times in UTC);
 * Get the morning and evening civil twilights (begining and ending times in UTC);
-* Get if, at that moment and position, it is hours of darkness (based on the nautical twilight).
+* Get if, at that moment and position, it is hours of darkness (based on the civil twilight).
 
 ## Limitations
 
