@@ -13,7 +13,7 @@ import 'twilight.dart';
 /// - the latitude in degrees, positive for north, negative for south;
 /// - the longitude in degrees, positive for east, negative for west.
 class SolarCalculator {
-  final DateTime date;
+  late final DateTime date;
 
   final double latitude;
 
@@ -32,7 +32,7 @@ class SolarCalculator {
   DateTime? _sunsetTime;
   DateTime? _sunTransitTime;
 
-  SolarCalculator(this.date, double latitude, this.longitude)
+  SolarCalculator(this.date, double latitude, this.longitude, [double timezoneOffset = 0.0])
       : latitude = (latitude >= 90)
             ? 89.9
             : (latitude <= -90)
@@ -44,7 +44,7 @@ class SolarCalculator {
   /// Hours of darkness are defined as being between the end of the evening civil twilight and the begining of the
   /// morning civil twilight.
   bool get isHoursOfDarkness {
-    var solarZenith = 90 - sunHorizontalPosition.elevation;
+    final solarZenith = 90 - sunHorizontalPosition.elevation;
     return (solarZenith > 96.0);
   }
 

@@ -9,7 +9,8 @@ import 'extensions.dart';
 /// Universal Time. Julian dates are expressed as a Julian day number with a decimal fraction added.
 ///
 /// The Julian day number (JDN) is the number assigned to a whole solar day in the Julian day count starting from
-/// 1 Jan -4712 at noon Universal time (January 1, 4713 BC at noon Universal Time).
+/// 1 Jan -4712 at noon Universal time (January 1, 4713 BC at noon Universal Time) in the proleptic Julian calendar, or
+/// 24 Nov -4713 at noon Universal time (November 24th, 4714 BC) in the proleptic Gregorian calendar.
 class JulianDate {
   DateTime? _gregorianDateTime;
 
@@ -34,12 +35,12 @@ class JulianDate {
   JulianDate.fromDateTime(DateTime dateTime) {
     _gregorianDateTime = dateTime;
 
-    var utcDate = dateTime.toUtc();
+    final utcDate = dateTime.toUtc();
 
     var year = utcDate.year;
     var month = utcDate.month;
 
-    var day = utcDate.day +
+    final day = utcDate.day +
         (utcDate.hour / Duration.hoursPerDay) +
         (utcDate.minute / Duration.minutesPerDay) +
         (utcDate.second +
@@ -57,15 +58,17 @@ class JulianDate {
 
     if (!utcDate.isJulianDate) // convert to Gregorian calendar
     {
-      var a = (year / 100).floor();
+      final a = (year / 100).floor();
       b = 2 - a + (a / 4).floor();
     }
 
-    julianDay = (365.25 * (year + 4716)).floor() +
-        (30.6001 * (month + 1)).floor() +
-        day +
-        b -
-        1524.5;
+    julianDay = (365.25 * (year + 4716)).floor() + (30.6001 * (month + 1)).floor() + day + b - 1524.5;
+
+    // Easiest way
+    // TODO Under test
+    // final julianEpoch = DateTime.utc(-4713, 11, 24, 12, 0);
+    // final jd = dateTime.toUtc().difference(julianEpoch).totalDays;
+    // if (jd != julianDay) print('JULIAN DAY CALCULATION DISCREPANCY');
   }
 
   /// Convert this [JulianDate] to a Gregorian [DateTime].
@@ -78,8 +81,7 @@ class JulianDate {
     if (modfJulianDay.integerPart < 2299161) {
       a = modfJulianDay.integerPart;
     } else {
-      final alpha =
-          ((modfJulianDay.integerPart - 1867216.25) / 36524.25).floor();
+      final alpha = ((modfJulianDay.integerPart - 1867216.25) / 36524.25).floor();
       a = modfJulianDay.integerPart + 1 + alpha - (alpha / 4).floor();
     }
 
@@ -88,27 +90,20 @@ class JulianDate {
     final d = (365.25 * c).floor();
     final e = ((b - d) / 30.6001).floor();
 
-    double day = b - d - (30.6001 * e).floor() + modfJulianDay.fractionalPart;
+    final day = b - d - (30.6001 * e).floor(); // + modfJulianDay.fractionalPart;
     final month = (e < 14) ? e - 1 : e - 13;
     final year = (month > 2) ? c - 4716 : c - 4715;
 
-    final decimalPart = day - day.truncate();
-    final hours = decimalPart * 24;
+    // final modfDay = modf(day);
 
-    Duration durationToAdd = Timespan.fromHours(hours);
+    Duration durationToAdd = Timespan.fromHours(modfJulianDay.fractionalPart * 24);
 
-    return DateTime.utc(year, month, day.truncate()).add(durationToAdd);
+    return DateTime.utc(year, month, day).add(durationToAdd);
   }
 
-  JulianDate operator +(Duration duration) {
-    // _gregorianDateTime = _gregorianDateTime?.add(duration);
-    return JulianDate(julianDay + duration.totalDays);
-  }
+  JulianDate operator +(Duration duration) => JulianDate(julianDay + duration.totalDays);
 
-  JulianDate operator -(Duration duration) {
-    // _gregorianDateTime = _gregorianDateTime?.subtract(duration);
-    return JulianDate(julianDay - duration.totalDays);
-  }
+  JulianDate operator -(Duration duration) => JulianDate(julianDay - duration.totalDays);
 
   // JulianDate operator +(Duration duration) => JulianDate.fromDateTime(gregorianDateTime.add(duration));
 

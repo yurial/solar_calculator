@@ -14,8 +14,7 @@ class Earth {
   double? _correctedObliquityOfEcliptic;
   double? _earthOrbitalEccentricity;
 
-  factory Earth(JulianDate julianDate) => _cache.putIfAbsent(
-      julianDate.julianDay, () => Earth._internal(julianDate));
+  factory Earth(JulianDate julianDate) => _cache.putIfAbsent(julianDate.julianDay, () => Earth._internal(julianDate));
 
   Earth._internal(this.julianDate);
 
@@ -26,10 +25,8 @@ class Earth {
   /// The obliquity is an effect caused by the tilt of the Earth on its axis with respect to the celestial equator.
   /// In other words, it is the angle between the plane of the Earth’s equator and the plane across which the Sun and planets
   /// appear to travel.
-  double get meanObliquityOfEcliptic {
-    if (_meanObliquityOfEcliptic == null) {
-      var u = julianDate.julianCenturies / 100;
-      _meanObliquityOfEcliptic = evaluatePolynomial(u, [
+  double get meanObliquityOfEcliptic =>
+      _meanObliquityOfEcliptic ??= evaluatePolynomial(julianDate.julianCenturies / 100, [
         Angle(degrees: 23, minutes: 26, seconds: 21.448).degrees,
         -Angle(seconds: 4680.93).degrees,
         -1.55,
@@ -42,23 +39,16 @@ class Earth {
         5.79,
         2.45
       ]);
-    }
-
-    return _meanObliquityOfEcliptic!;
-  }
 
   /// The mean obliquity of the ecliptic in degrees, corrected for nutation and aberration.
-  double get correctedObliquityOfEcliptic =>
-      _correctedObliquityOfEcliptic ??= meanObliquityOfEcliptic +
-          (0.00256 * cos(nutationAndAberrationCorrection.toRadians()));
+  double get correctedObliquityOfEcliptic => _correctedObliquityOfEcliptic ??=
+      meanObliquityOfEcliptic + (0.00256 * cos(nutationAndAberrationCorrection.toRadians()));
 
   /// The eccentricity of the Earth orbit (unitless).
   ///
   /// The eccentricity refers to the "flatness" of the ellipse swept out by the Earth in its orbit around the Sun.
-  double get orbitalEccentricity =>
-      _earthOrbitalEccentricity ??= evaluatePolynomial(
-          julianDate.julianCenturies,
-          [0.016708634, -0.000042037, -0.0000001267]);
+  double get orbitalEccentricity => _earthOrbitalEccentricity ??=
+      evaluatePolynomial(julianDate.julianCenturies, [0.016708634, -0.000042037, -0.0000001267]);
 
   /// The correction factor for nutation and aberration.
   ///
@@ -68,6 +58,5 @@ class Earth {
   ///
   /// Astronomical nutation is a phenomenon which causes the orientation of the axis of rotation of a spinning astronomical
   /// object to vary over time. It is caused by the gravitational forces of other nearby bodies acting upon the spinning object.
-  double get nutationAndAberrationCorrection =>
-      125.04 - (1934.136 * julianDate.julianCenturies);
+  double get nutationAndAberrationCorrection => 125.04 - (1934.136 * julianDate.julianCenturies);
 }
