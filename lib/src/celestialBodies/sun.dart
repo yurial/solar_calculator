@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:solar_calculator/solar_calculator.dart';
 import 'package:solar_calculator/src/celestialBodies/earth.dart';
 import 'package:solar_calculator/src/coordinateSystems/horizontalCoordinate.dart';
-import 'package:solar_calculator/src/julianDate.dart';
+import 'package:solar_calculator/src/instant.dart';
 import 'package:solar_calculator/src/math.dart';
 import 'package:solar_calculator/src/extensions.dart';
 
@@ -11,7 +11,7 @@ class Sun {
   // Cache
   static final Map<double, Sun> _cache = <double, Sun>{};
 
-  final JulianDate julianDate;
+  final Instant instant;
 
   double? _meanLongitude;
   double? _meanAnomaly;
@@ -25,9 +25,9 @@ class Sun {
 
   EquatorialCoordinate? _equatorialPosition;
 
-  factory Sun(JulianDate julianDate) => _cache.putIfAbsent(julianDate.julianDay, () => Sun._internal(julianDate));
+  factory Sun(Instant instant) => _cache.putIfAbsent(instant.julianDay, () => Sun._internal(instant));
 
-  Sun._internal(this.julianDate);
+  Sun._internal(this.instant);
 
   /// The equation of time in minutes.
   ///
@@ -44,7 +44,7 @@ class Sun {
   /// Earth's elliptical orbit and Kepler's law of equal areas in equal times are the culprits behind this phenomenon.
   double get equationOfTime {
     if (_equationOfTime == null) {
-      final earth = Earth(julianDate);
+      final earth = Earth(instant);
 
       final epsilonRadians = earth.correctedObliquityOfEcliptic.toRadians();
       final l0Radians = meanLongitude.toRadians();
@@ -69,9 +69,8 @@ class Sun {
   ///
   /// The mean longitude is the ecliptic longitude at which an orbiting body could be found if its orbit were circular and
   /// free of perturbations.
-  double get meanLongitude =>
-      _meanLongitude ??= evaluatePolynomial(julianDate.julianCenturies, [280.46646, 36000.76983, 0.0003032])
-          .correctDegreesForLargeAngles();
+  double get meanLongitude => _meanLongitude ??=
+      evaluatePolynomial(instant.julianCenturies, [280.46646, 36000.76983, 0.0003032]).correctDegreesForLargeAngles();
 
   /// The geometric mean anomaly of the Sun in degrees.
   ///
@@ -88,7 +87,7 @@ class Sun {
   ///
   /// See [meanAnomaly].
   double get uncorrectedMeanAnomaly =>
-      _uncorrectedMeanAnomaly ??= evaluatePolynomial(julianDate.julianCenturies, [357.52911, 35999.05029, -0.0001537]);
+      _uncorrectedMeanAnomaly ??= evaluatePolynomial(instant.julianCenturies, [357.52911, 35999.05029, -0.0001537]);
 
   /// The Sun's equation of center, in degrees.
   ///
@@ -104,7 +103,7 @@ class Sun {
     if (_equationOfCenter == null) {
       final mRadians = meanAnomaly.toRadians();
 
-      final julianCenturies = julianDate.julianCenturies;
+      final julianCenturies = instant.julianCenturies;
 
       _equationOfCenter = (sin(mRadians) * (1.914602 - julianCenturies * (0.004817 + 0.000014 * julianCenturies))) +
           (sin(mRadians * 2.0) * (0.019993 - 0.000101 * julianCenturies)) +
@@ -150,7 +149,7 @@ class Sun {
   ///
   /// Apparent longitude is the celestial longitude corrected for aberration and nutation as opposed to mean longitude.
   double get apparentLongitude => _apparentLongitude ??=
-      trueLongitude - 0.00569 - (0.00478 * sin(Earth(julianDate).nutationAndAberrationCorrection.toRadians()));
+      trueLongitude - 0.00569 - (0.00478 * sin(Earth(instant).nutationAndAberrationCorrection.toRadians()));
 
   /// The Apparent position of the Sun in the Equatorial Coordinate System.
   ///
@@ -160,7 +159,7 @@ class Sun {
   /// for the winter.
   EquatorialCoordinate get equatorialPosition {
     if (_equatorialPosition == null) {
-      final earth = Earth(julianDate);
+      final earth = Earth(instant);
 
       final rightAscension = atan2(
         cos(earth.correctedObliquityOfEcliptic.toRadians()) * sin(apparentLongitude.toRadians()),
@@ -178,7 +177,7 @@ class Sun {
 
   /// Gets the apparent position of the Sun in the Horizontal Coordinate System.
   HorizontalCoordinate horizontalPosition(double latitude, double longitude) {
-    final hourAngle = _calculateHourAngle(longitude);
+    final hourAngle = _calculateLocalHourAngle(longitude);
     final hourAngleRadians = hourAngle.toRadians();
 
     final latitudeRadians = latitude.toRadians();
@@ -206,16 +205,19 @@ class Sun {
     return acos(cosinusSolarZenith);
   }
 
-  /// Calculates the Sun hour angle for the given [longitude]. The calculated value is in degrees.
+  /// Calculates the Sun local hour angle in degrees for the given [longitude].
+  ///
+  /// The local hour angle is calculated from the local meridian.
   ///
   /// The [longitude] is given in degrees.
-  double _calculateHourAngle(double longitude) {
-    final timeOffset = equationOfTime + (4.0 * longitude);
+  double _calculateLocalHourAngle(double longitude) {
+    final timeOffset = equationOfTime + (4.0 * longitude) - (Duration.minutesPerHour * instant.timeZoneOffset);
 
-    final utcDateTime = julianDate.gregorianDateTime.toUtc();
-    final time = utcDateTime.time;
+    // final utcDateTime = instant.toUtc();
+    // final time = utcDateTime.time;
 
-    var trueSolarTime = time.totalMinutes + timeOffset;
+    // var trueSolarTime = time.totalMinutes + timeOffset;
+    var trueSolarTime = instant.time.totalMinutes + timeOffset;
 
     while (trueSolarTime > Duration.minutesPerDay) {
       trueSolarTime -= Duration.minutesPerDay;

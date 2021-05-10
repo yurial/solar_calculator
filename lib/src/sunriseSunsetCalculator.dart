@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:solar_calculator/src/celestialBodies/sun.dart';
+import 'package:solar_calculator/src/instant.dart';
 
 import 'timespan.dart';
-import 'julianDate.dart';
 import 'extensions.dart';
 
 class SunriseSunsetCalculator {
@@ -15,15 +15,15 @@ class SunriseSunsetCalculator {
   /// atmospheric refraction at sunrise and sunset, and the size of the solar disk).
   final double sunZenithDistance;
 
-  final DateTime date;
+  final Instant instant;
 
   final double latitude;
   final double longitude;
 
-  SunriseSunsetCalculator(this.date, this.latitude, this.longitude, {this.sunZenithDistance = 90.833});
+  SunriseSunsetCalculator(this.instant, this.latitude, this.longitude, {this.sunZenithDistance = 90.833});
 
-  double _calculateSunriseMinutes(JulianDate julianDate) {
-    final sun = Sun(julianDate);
+  double _calculateSunriseMinutes(Instant instant) {
+    final sun = Sun(instant);
 
     final hourAngle = _calculateSolarHourAngleForSunriseSunset(sun.equatorialPosition.declination);
 
@@ -32,8 +32,8 @@ class SunriseSunsetCalculator {
     return 720 - 4 * (longitude + hourAngle) - sun.equationOfTime;
   }
 
-  double _calculateSunsetMinutes(JulianDate julianDate) {
-    final sun = Sun(julianDate);
+  double _calculateSunsetMinutes(Instant instant) {
+    final sun = Sun(instant);
 
     final hourAngle = _calculateSolarHourAngleForSunriseSunset(sun.equatorialPosition.declination);
 
@@ -42,29 +42,28 @@ class SunriseSunsetCalculator {
     return 720 - 4 * (longitude - hourAngle) - sun.equationOfTime;
   }
 
-  DateTime calculateSunTransitTime() {
-    final julianDate = JulianDate.fromDateTime(date.midnightUtc);
+  Instant calculateSunTransitTime() {
+    final beginingOfDay = instant.beginingOfDay();
 
-    var tNoon = (julianDate - Timespan.fromDays(longitude / 360));
+    var tNoon = (beginingOfDay - Timespan.fromDays(longitude / 360));
     final solarNoonOffset = 720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
 
-    tNoon = (julianDate + Timespan.fromMinutes(solarNoonOffset));
+    tNoon = (beginingOfDay + Timespan.fromMinutes(solarNoonOffset));
     final solarNoonUtc = 720 - (longitude * 4) - Sun(tNoon).equationOfTime; // in minutes
 
-    return julianDate.gregorianDateTime.add(Timespan.fromMinutes(solarNoonUtc));
+    return beginingOfDay + Timespan.fromMinutes(solarNoonUtc + (instant.timeZoneOffset * Duration.minutesPerHour));
   }
 
-  DateTime calculateSunrise() {
-    // TODO Should be the local time
-    final julianDate = JulianDate.fromDateTime(date.midnightUtc);
+  Instant calculateSunrise() {
+    final beginingOfDay = instant.beginingOfDay();
 
-    final sunriseTime = _calculateSunriseMinutes(julianDate);
+    final sunriseTime = _calculateSunriseMinutes(beginingOfDay);
     final newSunriseTime =
-        sunriseTime.isNaN ? double.nan : _calculateSunriseMinutes(julianDate + Timespan.fromMinutes(sunriseTime));
+        sunriseTime.isNaN ? double.nan : _calculateSunriseMinutes(beginingOfDay + Timespan.fromMinutes(sunriseTime));
 
     if (newSunriseTime.isNaN) {
       // No sunrise found
-      final dayOfYear = date.dayOfYear; //julianDate.gregorianDateTime.dayOfYear;
+      final dayOfYear = instant.dayOfYear;
 
       if ((latitude > 66.4 && dayOfYear > 79 && dayOfYear < 267) ||
           (latitude < -66.4 && (dayOfYear < 83 || dayOfYear > 263))) {
@@ -76,20 +75,19 @@ class SunriseSunsetCalculator {
       return _calculateNextSunrise();
     }
 
-    return julianDate.gregorianDateTime.add(Timespan.fromMinutes(newSunriseTime));
+    return beginingOfDay + Timespan.fromMinutes(newSunriseTime + (instant.timeZoneOffset * Duration.minutesPerHour));
   }
 
-  DateTime calculateSunset() {
-    // TODO Should be the local time
-    final julianDate = JulianDate.fromDateTime(date.midnightUtc);
+  Instant calculateSunset() {
+    final beginingOfDay = instant.beginingOfDay();
 
-    final sunsetTime = _calculateSunsetMinutes(julianDate);
+    final sunsetTime = _calculateSunsetMinutes(beginingOfDay);
     final newSunsetTime =
-        sunsetTime.isNaN ? double.nan : _calculateSunsetMinutes(julianDate + Timespan.fromMinutes(sunsetTime));
+        sunsetTime.isNaN ? double.nan : _calculateSunsetMinutes(beginingOfDay + Timespan.fromMinutes(sunsetTime));
 
     if (newSunsetTime.isNaN) {
       // No sunset found
-      final dayOfYear = date.dayOfYear; //julianDate.gregorianDateTime.dayOfYear;
+      final dayOfYear = instant.dayOfYear; //julianDate.gregorianDateTime.dayOfYear;
 
       if ((latitude > 66.4 && dayOfYear > 79 && dayOfYear < 267) ||
           (latitude < -66.4 && (dayOfYear < 83 || dayOfYear > 263))) {
@@ -101,29 +99,27 @@ class SunriseSunsetCalculator {
       return _calculatePreviousSunset();
     }
 
-    return julianDate.gregorianDateTime.add(Timespan.fromMinutes(newSunsetTime));
+    return beginingOfDay + Timespan.fromMinutes(newSunsetTime + (instant.timeZoneOffset * Duration.minutesPerHour));
   }
 
-  DateTime _calculateNextSunrise() => _calculateNextPreviousEvent(Duration(days: 1), _calculateSunriseMinutes);
+  Instant _calculateNextSunrise() => _calculateNextPreviousEvent(Duration(days: 1), _calculateSunriseMinutes);
 
-  DateTime _calculatePreviousSunrise() => _calculateNextPreviousEvent(Duration(days: -1), _calculateSunriseMinutes);
+  Instant _calculatePreviousSunrise() => _calculateNextPreviousEvent(Duration(days: -1), _calculateSunriseMinutes);
 
-  DateTime _calculateNextSunset() => _calculateNextPreviousEvent(Duration(days: 1), _calculateSunsetMinutes);
+  Instant _calculateNextSunset() => _calculateNextPreviousEvent(Duration(days: 1), _calculateSunsetMinutes);
 
-  DateTime _calculatePreviousSunset() => _calculateNextPreviousEvent(Duration(days: -1), _calculateSunsetMinutes);
+  Instant _calculatePreviousSunset() => _calculateNextPreviousEvent(Duration(days: -1), _calculateSunsetMinutes);
 
-  DateTime _calculateNextPreviousEvent(Duration duration, double Function(JulianDate julianDate) getEvent) {
-    var dateTime = date.midnightUtc;
-    var julianDate = JulianDate.fromDateTime(dateTime);
-    var time = double.nan; //getEvent(julianDate);
+  Instant _calculateNextPreviousEvent(Duration duration, double Function(Instant instant) getEvent) {
+    var beginingOfDay = instant.beginingOfDay();
+    var time = double.nan;
 
     while (time.isNaN) {
-      julianDate += duration;
-      dateTime = dateTime.add(duration);
-      time = getEvent(julianDate);
+      beginingOfDay = beginingOfDay + duration;
+      time = getEvent(beginingOfDay);
     }
 
-    return dateTime.midnightUtc.add(Timespan.fromMinutes(time));
+    return beginingOfDay + Timespan.fromMinutes(time + (instant.timeZoneOffset * Duration.minutesPerHour));
   }
 
   /// Gets the solar hour angle in degrees for sunset and sunrise calculation, corrected for atmospheric refraction,
